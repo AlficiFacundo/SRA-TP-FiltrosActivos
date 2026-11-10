@@ -1,6 +1,6 @@
 # TP integrador: Filtros analógicos activos
 
-**Grupo:** [completar]  
+**Grupo:** 1 
 **Integrantes:** [completar]  
 **Aproximaciones:** [completar]  
 **Filtro implementado:** [completar]  
