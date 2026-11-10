@@ -1,0 +1,1 @@
+Guardar aquí los esquemas .asc o netlists .cir desarrollados por el grupo. Incluir un modelo comercial de operacional cuando corresponda y una nota sobre su procedencia. Los netlists docentes de referencia NO se distribuyen como soluciones.

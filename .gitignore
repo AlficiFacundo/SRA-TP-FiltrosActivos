@@ -1,0 +1,11 @@
+__pycache__/
+.ipynb_checkpoints/
+*.raw
+*.log
+*.op.raw
+*.net
+*.bak
+*.aux
+*.out
+*.toc
+*.synctex.gz

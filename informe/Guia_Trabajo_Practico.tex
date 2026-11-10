@@ -1,0 +1,111 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,geometry,booktabs,longtable,array,amsmath,amssymb,siunitx,hyperref,enumitem,xcolor,fancyhdr}
+\geometry{margin=2.35cm}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue}
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=3pt}
+\setlist[enumerate]{leftmargin=*,itemsep=3pt,topsep=3pt}
+\pagestyle{fancy}\fancyhf{}\lhead{Filtros analógicos activos}\rhead{TP integrador -- 4.º año}\cfoot{\thepage}
+\newcommand{\todo}[1]{\textcolor{blue}{#1}}
+\begin{document}
+\begin{center}
+{\Large\bfseries Trabajo Práctico Integrador de Laboratorio}\\[5pt]
+{\LARGE\bfseries Diseño, simulación e implementación de filtros analógicos activos}\\[9pt]
+Ingeniería Electrónica -- Cuarto año\\
+\textbf{Duración: cinco semanas \quad Modalidad: grupos de trabajo}\\[7pt]
+\textit{Guía para estudiantes -- versión 1.1, octubre de 2026}
+\end{center}
+\noindent\textbf{Cátedra / universidad:} \rule{9cm}{0.4pt}\\
+\textbf{Docentes:} \rule{11cm}{0.4pt}\\
+\textbf{Grupo y participantes:} \rule{9cm}{0.4pt}
+\tableofcontents
+\section{Propósito y competencias}
+Diseñar y comparar filtros analógicos a partir de especificaciones; obtener funciones de transferencia ideales con \texttt{scipy.signal}; sintetizar un filtro mediante amplificadores operacionales; derivar su función de transferencia circuital con \texttt{SymPy}; analizar sensibilidades; validar con LTspice y medir un prototipo real. Documentar resultados reproducibles en un repositorio y en un informe \LaTeX.
+\section{Herramientas y alcance}
+Son obligatorios Python y Google Colab (NumPy, SciPy, SymPy, Matplotlib y pandas), LTspice, \LaTeX\ y un repositorio Git. Se entregan notebooks \emph{de arranque} con consignas y fragmentos de código; \textbf{no son soluciones completas}. Cada grupo estudia matemáticamente dos clases de filtros con dos aproximaciones, pero \textbf{realiza la síntesis, simulación circuital e implementación física de un solo filtro}. La construcción del ecualizador de fase corresponde únicamente al nivel avanzado optativo.
+\section{Asignación de grupos y aproximaciones}
+\begin{center}\begin{tabular}{clll}\toprule
+Grupo & Tipos asignados & Aproximaciones & Filtro propuesto\\\midrule
+1 & LP y HP & Butterworth / Chebyshev I & LP Butterworth, orden 3\\
+2 & HP y BP & Butterworth / Chebyshev II & HP Butterworth, orden 3\\
+3 & LP y BS & Chebyshev I / Elíptica & LP Chebyshev I, orden 3\\
+4 & LP y BP & Butterworth / Bessel & LP Bessel, orden 3\\\bottomrule
+\end{tabular}\end{center}
+Cada grupo analiza dos tipos de filtros (cuatro combinaciones matemáticas). La propuesta de implementación es \emph{provisional} y requiere aprobación docente después del diseño matemático. No se exige que cada grupo implemente ambas aproximaciones. Cauer y elíptica designan la misma familia.
+\section{Especificaciones de diseño matemático}
+Para las clases asignadas se adopta atenuación máxima en banda de paso $A_p=\SI{1}{dB}$ y mínima en rechazo $A_s=\SI{24}{dB}$, salvo el caso Bessel detallado a continuación. Las frecuencias están expresadas en Hz.
+\begin{center}\begin{tabular}{lll}\toprule
+Tipo & Banda(s) de paso & Banda(s) de rechazo\\\midrule
+Pasabajos (LP) & $f\le 1000$ & $f\ge 4000$\\
+Pasaaltos (HP) & $f\ge 4000$ & $f\le 1000$\\
+Pasabanda (BP) & $1200\le f\le2400$ & $f\le500$ o $f\ge5500$\\
+Rechazabanda (BS) & $f\le500$ o $f\ge5500$ & $1200\le f\le2400$\\\bottomrule
+\end{tabular}\end{center}
+Se trabajará con filtros \emph{analógicos}, en rad/s para las funciones de SciPy: $\omega=2\pi f$. El alumno debe verificar las condiciones en los bordes y en toda la banda pertinente, teniendo en cuenta rizado y normalización.
+\paragraph{Excepción Bessel.} Para el grupo 4, la aproximación Bessel se estudiará a orden comparable con Butterworth (o al orden que indique la cátedra), con normalización y criterio de comparación explícitos. \textbf{No se exigirá que Bessel satisfaga simultáneamente $A_p$ y $A_s$ si no resulta viable con ese orden.} Se evaluarán principalmente fase, respuesta al escalón y retardo de grupo. Los filtros de orden elevado pueden mantenerse solo en el análisis matemático.
+\section{Nivel I: actividades obligatorias}
+\begin{enumerate}
+\item \textbf{Diseño matemático (cuatro casos).} Para cada uno de los dos tipos asignados, aplicar las dos aproximaciones del grupo. Con SciPy obtener orden (cuando corresponda), frecuencia(s) de diseño, polos, ceros, ganancia y función de transferencia; preferir la representación ceros--polos--ganancia y secciones de segundo orden para el cálculo numérico.
+\item \textbf{Comparación.} Representar en escala logarítmica magnitud en dB, fase desenrollada y retardo de grupo, e identificar las diferencias de selectividad, rizado, orden y comportamiento temporal. Documentar explícitamente el criterio Bessel.
+\item \textbf{Elección de un único filtro.} Presentar una propuesta de implementación (orden preferente 2--4), topología y distribución en secciones de primer/segundo orden. Obtener autorización docente antes de adquirir o montar componentes.
+\item \textbf{Análisis circuital simbólico.} Dibujar el circuito y formular sus ecuaciones nodales, con amplificadores operacionales ideales como primera aproximación. Resolver con SymPy $H_c(s)=V_o(s)/V_i(s)$ y comparar con la función objetivo $H_t(s)$, identificando $\omega_0$, $Q$ y ganancias de las secciones.
+\item \textbf{Componentes y operacional.} Calcular valores de resistencias/capacitores, seleccionar series comerciales, recalcular la respuesta y justificar el amplificador operacional con datos de hoja técnica: GBW, slew rate, alimentación, rango de entrada, excursión de salida y carga. Incluir un margen razonado de diseño; comprobar amplitud máxima para evitar saturación.
+\item \textbf{Sensibilidad obligatoria.} Calcular con SymPy, \emph{antes de imponer igualdades entre componentes}, las sensibilidades normalizadas $S_x^{\omega_0}$ y $S_x^Q$ de cada resistencia y capacitor independiente de una sección de segundo orden. Si $Q$ no corresponde a una sección, justificar y estudiar un parámetro pertinente. Validar con perturbaciones finitas de $\pm1\%$ y comparar.
+\item \textbf{LTspice.} Entregar esquema o netlist ejecutable y simulaciones AC y transitoria. Comparar respuesta ideal, respuesta circuital ideal y circuito con modelo de operacional comercial cuando esté disponible. No presentar un modelo pedagógico como si fuera una validación comercial.
+\item \textbf{Laboratorio.} Construir \textbf{un} filtro; medir amplitud y fase en un conjunto de frecuencias que cubra bandas de paso, transición y rechazo; estimar parámetros característicos. Documentar fuente, amplitud de entrada, alimentación, carga, instrumentos, tolerancias y limitaciones de medición. Contrastar Python--LTspice--mediciones.
+\item \textbf{Comunicación.} Entregar informe en \LaTeX\ (fuentes y PDF), notebooks ejecutables, archivos de LTspice, datos de medición, documentación del componente y README en repositorio Git.
+\end{enumerate}
+\section{Nivel II: ampliación optativa (+1 punto)}
+Una vez aprobado el Nivel I, efectuar análisis estadístico de tolerancias del filtro construido: (a) definir distribuciones de componentes (por ejemplo, uniforme e independiente con $R:\pm5\%$ y $C:\pm10\%$); (b) ejecutar al menos 100 corridas \emph{efectivamente distintas} en LTspice, documentando la forma de generar nuevas muestras; (c) obtener distribución de parámetros relevantes y porcentaje de cumplimiento; (d) comparar resultados con sensibilidad lineal; (e) repetir con tolerancias menores. No basta con repetir 100 veces el mismo circuito nominal. Si la instalación de LTspice no admite una función específica, justificar y documentar un procedimiento equivalente verificable.
+\section{Nivel III: ampliación avanzada (+2 puntos en total)}
+Cumplir Nivel II y diseñar, simular, construir y medir \textbf{un ecualizador de fase all-pass} para modificar o compensar el retardo de grupo de un filtro seleccionado. Justificar función objetivo, banda útil y mejora cuantitativa. Verificar que la magnitud sea aproximadamente constante en la banda de interés. La bonificación máxima es de \textbf{dos puntos en total}; no se acumulan +1 y +2.
+\section{Cronograma y entregables parciales}
+\begin{center}\begin{tabular}{p{1.5cm}p{9cm}p{3cm}}\toprule
+Semana & Actividad & Evidencia\\\midrule
+1 & Cuatro diseños matemáticos, comparación y selección del filtro & Notebook 01; aprobación docente\\
+2 & Síntesis, SymPy, componentes y selección de AO & Notebook 02; esquema y materiales\\
+3 & Sensibilidades, LTspice AC/transitorio; montaje inicial & Notebook 03; simulaciones\\
+4 & Montaje, mediciones, avance del informe; optativos & Datos CSV, fotos y borrador\\
+5 & Comparación, informe, repositorio, defensa; optativos & Entrega final\\
+\bottomrule
+\end{tabular}\end{center}
+Carga orientativa: 6--8 horas semanales por estudiante, incluyendo actividades presenciales y no presenciales. Se recomienda reservar componentes e instrumental durante la primera semana y comenzar el informe desde la segunda. Las fechas concretas y el régimen de recuperación serán establecidos por la cátedra.
+\section{Informe y criterios de evaluación}
+\begin{center}\begin{tabular}{lr}\toprule
+Rubro (Nivel I) & Ponderación\\\midrule
+Diseño matemático y aproximaciones & 20\%\\
+Síntesis circuital y SymPy & 20\%\\
+Operacional y LTspice & 15\%\\
+Sensibilidades & 15\%\\
+Implementación y mediciones & 20\%\\
+Informe LaTeX y repositorio & 10\%\\\midrule
+Total & 100\%\\\bottomrule
+\end{tabular}\end{center}
+El informe debe incluir portada, resumen, especificaciones, metodología, derivaciones, resultados gráficos con ejes/unidades, incertidumbres, discusión, conclusiones y bibliografía. Referenciar hojas de datos y software. El repositorio debe incluir un \texttt{README.md} con instrucciones de reproducción y la versión de bibliotecas utilizada. No subir archivos temporales de LTspice ni datos personales sensibles. Se podrá realizar defensa oral individual. \textbf{La aplicación de las bonificaciones a los parciales, los límites de nota y las condiciones de aprobación quedan sujetos a la normativa y confirmación de la cátedra.}
+\section{Criterios de calidad y seguridad}
+Comprobar alimentación y polaridad antes de energizar, desacoplar alimentaciones y respetar máximos absolutos de componentes. No medir tensiones fuera del rango del instrumental. Explicar errores y discrepancias: no se exige coincidencia perfecta entre teoría, simulación y medición. Registrar valores reales medidos de $R$ y $C$ cuando sea posible. En mediciones de fase, registrar la referencia temporal y el signo empleado.
+\section{Recursos y tutoriales}
+\begin{itemize}
+\item SciPy Signal: \url{https://docs.scipy.org/doc/scipy/reference/signal.html}
+\item SymPy: \url{https://docs.sympy.org/latest/index.html}
+\item Google Colab: \url{https://colab.research.google.com/}
+\item LTspice, página oficial: \url{https://www.analog.com/en/resources/design-tools-and-calculators/ltspice-simulator.html}
+\item Tutoriales LTspice de Analog Devices: \url{https://www.analog.com/en/resources/media-center/videos/series/ltspice-basics-video-series.html}
+\item Overleaf, introducción: \url{https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes}
+\item Overleaf, bibliografía: \url{https://www.overleaf.com/learn/latex/Bibliography_management_with_bibtex}
+\item Git: \url{https://git-scm.com/book/en/v2}
+\end{itemize}
+\section{Lista de verificación de entrega}
+\begin{itemize}
+\item[\(\square\)] Cuatro diseños matemáticos y comparaciones; excepción Bessel documentada.
+\item[\(\square\)] Un circuito sintetizado con derivación SymPy, componentes y AO justificados.
+\item[\(\square\)] Sensibilidades simbólicas y contraste por perturbaciones.
+\item[\(\square\)] Simulaciones AC/transitorio y resultados experimentales de un prototipo.
+\item[\(\square\)] Informe \texttt{.tex} y \texttt{.pdf}, fuentes de figuras y datos.
+\item[\(\square\)] Notebooks reproducibles y archivos LTspice ejecutables.
+\item[\(\square\)] URL del repositorio y README actualizado.
+\item[\(\square\)] Actividades optativas, si se presentan, identificadas por nivel.
+\end{itemize}
+\end{document}
