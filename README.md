@@ -1,12 +1,7 @@
 # TP integrador: Filtros analógicos activos
 
 **Grupo:** 1 
-**Integrantes:** [Alfici, Facundo Ezequiel
-Cravero, Samuele
-Dalmasso, Ludmila
-Di Carolo, Pierfelice
-Gallone, Francesco Claudio
-Gomez, Dolores Pilar]  
+**Integrantes:** [Alfici, Facundo Ezequiel;Cravero, Samuele;Dalmasso, Ludmila;Di Carolo, Pierfelice;Gallone, Francesco Claudio;Gomez, Dolores Pilar]  
 **Aproximaciones:** [Butterworth / Chevyshev I]  
 **Filtro implementado:** [completar]  
 
