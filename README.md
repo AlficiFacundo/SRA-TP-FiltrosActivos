@@ -1,8 +1,13 @@
 # TP integrador: Filtros analógicos activos
 
 **Grupo:** 1 
-**Integrantes:** [completar]  
-**Aproximaciones:** [completar]  
+**Integrantes:** [Alfici, Facundo Ezequiel
+Cravero, Samuele
+Dalmasso, Ludmila
+Di Carolo, Pierfelice
+Gallone, Francesco Claudio
+Gomez, Dolores Pilar]  
+**Aproximaciones:** [Butterworth / Chevyshev I]  
 **Filtro implementado:** [completar]  
 
 **Duración: cinco semanas.** Cada grupo estudia dos tipos de filtros con dos aproximaciones (cuatro diseños matemáticos) e implementa un único filtro.
@@ -18,7 +23,7 @@ Google Colab con numpy, scipy, sympy, matplotlib, pandas; LTspice; LaTeX (Overle
 5. Compilar `informe/Guia_Trabajo_Practico.tex` para consultar la guía. Para la entrega, usar `informe/Plantilla_Informe.tex`.
 
 ## Entrega
-Enlace al repositorio: [completar]  
+Enlace al repositorio: [https://github.com/AlficiFacundo/SRA-TP-FiltrosActivos]  
 Fecha: [completar]
 
 **No se incluyen soluciones de la cátedra.**
